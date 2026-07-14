@@ -1,0 +1,17 @@
+# Local Maven build output
+target/
+
+# Git metadata
+.git/
+.gitignore
+
+# IntelliJ files
+.idea/
+*.iml
+
+# VS Code local settings
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db

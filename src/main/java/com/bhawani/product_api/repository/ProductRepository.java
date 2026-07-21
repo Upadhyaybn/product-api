@@ -2,35 +2,29 @@ package com.bhawani.product_api.repository;
 
 import com.bhawani.product_api.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 /**
- * Repository provides database operations for Product.
- *
- * JpaRepository already provides:
- * save()
- * findById()
- * findAll()
- * deleteById()
- * existsById()
- * count()
+ * Provides database operations for Product entities.
  */
-
-@Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     /**
      * Finds a product using its unique SKU.
-     *
-     * Spring Data JPA automatically generates the query
-     * based on the method name.
      */
     Optional<Product> findBySku(String sku);
 
     /**
-     * Checks whether a product already exists with the SKU.
+     * Checks whether a product already exists with the given SKU.
      */
     boolean existsBySku(String sku);
+
+    /**
+     * Used during update.
+     *
+     * It checks whether another product already has the same SKU,
+     * excluding the product currently being updated.
+     */
+    boolean existsBySkuAndIdNot(String sku, Long id);
 }

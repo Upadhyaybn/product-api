@@ -1,11 +1,15 @@
 package com.bhawani.product_api.controller;
 
-import com.bhawani.product_api.entity.Product;
+import com.bhawani.product_api.dto.request.ProductCreateRequest;
+import com.bhawani.product_api.dto.request.ProductUpdateRequest;
+import com.bhawani.product_api.dto.response.ProductResponse;
 import com.bhawani.product_api.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -13,105 +17,76 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/products")
-public class ProductController {
-
+    public class ProductController {
     private final ProductService productService;
 
-    /**
-     * Constructor injection provides ProductService
-     * to the controller.
-     */
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     /**
      * Creates a new product.
-     *
-     * Endpoint:
-     * POST /api/v1/products
      */
     @PostMapping
-    public ResponseEntity<Product> createProduct(
-            @RequestBody Product product
+    public ResponseEntity<ProductResponse> createProduct(
+            @Valid @RequestBody ProductCreateRequest request
     ) {
+        ProductResponse response =
+                productService.createProduct(request);
 
-        Product createdProduct =
-                productService.createProduct(product);
+        URI location =
+                URI.create("/api/v1/products/" + response.id());
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdProduct);
+                .created(location)
+                .body(response);
     }
 
     /**
      * Returns all products.
-     *
-     * Endpoint:
-     * GET /api/v1/products
      */
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
 
-        List<Product> products =
-                productService.getAllProducts();
-
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(
+                productService.getAllProducts()
+        );
     }
 
     /**
-     * Returns one product by ID.
-     *
-     * Endpoint:
-     * GET /api/v1/products/{id}
+     * Returns one product by its database identifier.
      */
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(
+    public ResponseEntity<ProductResponse> getProductById(
             @PathVariable Long productId
     ) {
-
-        Product product =
-                productService.getProductById(productId);
-
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(
+                productService.getProductById(productId)
+        );
     }
 
     /**
-     * Completely updates an existing product.
-     *
-     * Endpoint:
-     * PUT /api/v1/products/{id}
+     * Completely replaces the editable fields of a product.
      */
     @PutMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(
+    public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long productId,
-            @RequestBody Product product
+            @Valid @RequestBody ProductUpdateRequest request
     ) {
-
-        Product updatedProduct =
-                productService.updateProduct(productId, product);
-
-        return ResponseEntity.ok(updatedProduct);
+        return ResponseEntity.ok(
+                productService.updateProduct(productId, request)
+        );
     }
 
     /**
-     * Deletes a product.
-     *
-     * Endpoint:
-     * DELETE /api/v1/products/{id}
+     * Removes an existing product.
      */
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProduct(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(
             @PathVariable Long productId
     ) {
-
         productService.deleteProduct(productId);
-
-        /*
-         * HTTP 204 means the operation succeeded
-         * and there is no response body.
-         */
-        return ResponseEntity.noContent().build();
     }
 
 }

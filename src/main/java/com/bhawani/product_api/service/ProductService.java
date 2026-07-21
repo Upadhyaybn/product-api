@@ -1,6 +1,8 @@
 package com.bhawani.product_api.service;
 
-import com.bhawani.product_api.entity.Product;
+import com.bhawani.product_api.dto.request.ProductCreateRequest;
+import com.bhawani.product_api.dto.request.ProductUpdateRequest;
+import com.bhawani.product_api.dto.response.ProductResponse;
 
 import java.util.List;
 
@@ -9,13 +11,16 @@ import java.util.List;
  */
 public interface ProductService {
 
-    Product createProduct(Product product);
+    ProductResponse createProduct(ProductCreateRequest request);
 
-    List<Product> getAllProducts();
+    List<ProductResponse> getAllProducts();
 
-    Product getProductById(Long productId);
+    ProductResponse getProductById(Long productId);
 
-    Product updateProduct(Long productId, Product updatedProduct);
+    ProductResponse updateProduct(
+            Long productId,
+            ProductUpdateRequest request
+    );
 
     void deleteProduct(Long productId);
 }

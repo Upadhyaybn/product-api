@@ -2,13 +2,19 @@ package com.bhawani.product_api.repository;
 
 import com.bhawani.product_api.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
 /**
- * Provides database operations for Product entities.
+ * Repository responsible for Product database operations.
+ *
+ * JpaRepository provides CRUD, paging and sorting support.
+ *
+ * JpaSpecificationExecutor allows dynamic filtering using
+ * JPA Criteria specifications.
  */
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     /**
      * Finds a product using its unique SKU.
@@ -16,15 +22,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findBySku(String sku);
 
     /**
-     * Checks whether a product already exists with the given SKU.
+     * Checks whether the given SKU already exists.
      */
     boolean existsBySku(String sku);
 
     /**
-     * Used during update.
+     * Checks whether another product already uses the SKU.
      *
-     * It checks whether another product already has the same SKU,
-     * excluding the product currently being updated.
+     * The supplied product ID is excluded from the check.
      */
     boolean existsBySkuAndIdNot(String sku, Long id);
 }

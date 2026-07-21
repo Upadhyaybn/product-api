@@ -8,9 +8,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.bhawani.product_api.dto.response.PageResponse;
+import com.bhawani.product_api.entity.ProductCategory;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * Exposes REST endpoints for Product operations.
@@ -43,14 +44,53 @@ import java.util.List;
     }
 
     /**
-     * Returns all products.
+     * Returns a paginated and optionally filtered product list.
+     *
+     * Examples:
+     *
+     * GET /api/v1/products
+     * GET /api/v1/products?page=0&size=5
+     * GET /api/v1/products?sortBy=price&direction=desc
+     * GET /api/v1/products?search=samsung
+     * GET /api/v1/products?category=ELECTRONICS
+     * GET /api/v1/products?active=true
      */
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+    public ResponseEntity<PageResponse<ProductResponse>> getProducts(
 
-        return ResponseEntity.ok(
-                productService.getAllProducts()
-        );
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            int size,
+
+            @RequestParam(defaultValue = "id")
+            String sortBy,
+
+            @RequestParam(defaultValue = "asc")
+            String direction,
+
+            @RequestParam(required = false)
+            String search,
+
+            @RequestParam(required = false)
+            ProductCategory category,
+
+            @RequestParam(required = false)
+            Boolean active
+    ) {
+        PageResponse<ProductResponse> response =
+                productService.getProducts(
+                        page,
+                        size,
+                        sortBy,
+                        direction,
+                        search,
+                        category,
+                        active
+                );
+
+        return ResponseEntity.ok(response);
     }
 
     /**

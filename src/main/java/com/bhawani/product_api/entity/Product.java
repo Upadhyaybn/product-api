@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
                 )
         }
 )
-public class Product {
+public class Product extends BaseEntity {
 
     /**
      * Primary key of the products table.
@@ -66,14 +66,14 @@ public class Product {
      * Product category is stored as readable text.
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 50)
     private ProductCategory category;
 
     /**
      * Indicates whether the product is available.
      */
     @Column(nullable = false)
-    private Boolean active;
+    private Boolean active = true;
 
     /**
      * Stores the time when the product was created.

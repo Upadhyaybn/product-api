@@ -8,28 +8,31 @@ import java.util.Optional;
 
 /**
  * Repository responsible for Product database operations.
- *
- * JpaRepository provides CRUD, paging and sorting support.
- *
- * JpaSpecificationExecutor allows dynamic filtering using
- * JPA Criteria specifications.
  */
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     /**
-     * Finds a product using its unique SKU.
+     * Finds a non-deleted product by ID.
      */
-    Optional<Product> findBySku(String sku);
+    Optional<Product> findByIdAndDeletedFalse(Long id);
 
     /**
-     * Checks whether the given SKU already exists.
+     * Finds a non-deleted product by SKU.
      */
-    boolean existsBySku(String sku);
+    Optional<Product> findBySkuAndDeletedFalse(String sku);
 
     /**
-     * Checks whether another product already uses the SKU.
+     * Checks whether a non-deleted product already uses the SKU.
+     */
+    boolean existsBySkuAndDeletedFalse(String sku);
+
+    /**
+     * Checks whether another non-deleted product uses the SKU.
      *
-     * The supplied product ID is excluded from the check.
+     * The current product ID is excluded during an update.
      */
-    boolean existsBySkuAndIdNot(String sku, Long id);
+    boolean existsBySkuAndIdNotAndDeletedFalse(
+            String sku,
+            Long id
+    );
 }

@@ -119,14 +119,15 @@ import java.net.URI;
     }
 
     /**
-     * Removes an existing product.
+     * Soft deletes a product.
      */
     @DeleteMapping("/{productId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(
+    public ResponseEntity<Void> deleteProduct(
             @PathVariable Long productId
     ) {
         productService.deleteProduct(productId);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

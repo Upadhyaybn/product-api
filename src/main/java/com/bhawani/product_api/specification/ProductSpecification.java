@@ -44,8 +44,16 @@ public final class ProductSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             /*
-             * Add text search only when the client supplies
-             * a non-empty search value.
+             * Always exclude soft-deleted products.
+             */
+            predicates.add(
+                    criteriaBuilder.isFalse(
+                            root.get("deleted")
+                    )
+            );
+
+            /*
+             * Optional text search.
              */
             if (StringUtils.hasText(search)) {
 

@@ -61,10 +61,10 @@
 		</dependency>
 
 		<!-- Required in Spring Boot 4.x to expose /h2-console -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-h2console</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-h2console</artifactId>-->
+<!--		</dependency>-->
 
 
 		<!-- PostgreSQL driver for Render production database -->

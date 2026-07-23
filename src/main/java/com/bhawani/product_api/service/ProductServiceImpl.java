@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
         /*
          * SKU is a business identifier and must remain unique.
          */
-        if (productRepository.existsBySku(normalizedSku)) {
+        if (productRepository.existsBySkuAndDeletedFalse(normalizedSku)) {
             throw new DuplicateSkuException(normalizedSku);
         }
 
@@ -218,7 +219,7 @@ public class ProductServiceImpl implements ProductService {
          * The current product ID is excluded so that keeping
          * the same SKU during an update is allowed.
          */
-        if (productRepository.existsBySkuAndIdNot(
+        if (productRepository.existsBySkuAndIdNotAndDeletedFalse(
                 normalizedSku,
                 productId
         )) {
@@ -252,26 +253,38 @@ public class ProductServiceImpl implements ProductService {
      * Deletes an existing product.
      */
     @Override
-    public void deleteProduct(
-            Long productId
-    ) {
-        /*
-         * Finding the product first ensures that a missing
-         * product returns 404 instead of silently succeeding.
-         */
-        Product existingProduct =
-                findProductById(productId);
+    public void deleteProduct(Long productId) {
 
-        productRepository.delete(existingProduct);
+        // Find only an existing, non-deleted product
+        Product product = findProductById(productId);
+
+        // Mark the product as deleted
+        product.setDeleted(true);
+
+        // Deleted products should no longer be active
+        product.setActive(false);
+
+        // Record when the deletion happened
+        product.setDeletedAt(LocalDateTime.now());
+
+        /*
+         * Save the modified entity.
+         *
+         * Hibernate generates an UPDATE statement instead of DELETE.
+         */
+        productRepository.save(product);
     }
 
     /**
-     * Shared helper method used by read, update and delete operations.
+     * Finds only a non-deleted product.
+     *
+     * A soft-deleted product behaves like a missing resource
+     * for normal API operations.
      */
     private Product findProductById(
             Long productId
     ) {
-        return productRepository.findById(productId)
+        return productRepository.findByIdAndDeletedFalse(productId)
                 .orElseThrow(
                         () -> new ProductNotFoundException(productId)
                 );
